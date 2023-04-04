@@ -1,42 +1,67 @@
-import React from 'react'
-import { Link } from "react-router-dom";
+import React, { useState, createContext } from 'react'
+import logo from '../../assets/logo.png'
+import AllNews from '../News/AllNews';
+import './Navbar.css'
+
+const categories = [
+    'business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'
+]
+
+const Category = createContext();
 
 const Navbar = () => {
 
+    const [category, setCategory] = useState('general');
+    const [input, setInput] = useState('')
+    const [query, setQuery] = useState(input)
+    let page = 2;
+    const [first, setfirst] = useState('')
+
+    const capitalize = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1)
+    }
+
+    const handleSubmit = () => {
+        if (input !== "" )
+            setQuery(input)
+            console.log(input)
+    }
+
     return (
-        <nav className="navbar fixed-top navbar-expand-lg bg-info">
-            <div className="container-fluid">
-                <Link className="navbar-brand" to="/">NEWS-NOW</Link>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item">
-                            <Link className="nav-link" aria-current="page" to="/">Home</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/about">About</Link>
-                        </li>
-                        <li className="nav-item dropdown">
-                            <Link className="nav-link dropdown-toggle" to="/" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                News Category
-                            </Link>
-                            <ul className="dropdown-menu">
-                                <li><Link className="dropdown-item" to="/general">General</Link></li>
-                                <li><Link className="dropdown-item" to="/business">Business</Link></li>
-                                <li><Link className="dropdown-item" to="/entertainment">Entertainment</Link></li>
-                                <li><Link className="dropdown-item" to="/health">Health</Link></li>
-                                <li><Link className="dropdown-item" to="/science">Science</Link></li>
-                                <li><Link className="dropdown-item" to="/sports">Sports</Link></li>
-                                <li><Link className="dropdown-item" to="/technology">Technology</Link></li>
-                            </ul>
-                        </li>
-                    </ul>
+        <Category.Provider value={category}>
+            <nav className="navbar fixed-top navbar-expand-lg bg-info pt-0">
+                <div className="container-fluid">
+                    <div className="navbar-brand d-flex justify-content-center align-items-center cursor-pointer" value={category} to="/general">
+                        <img src={logo} alt="logo" width="40%" className="d-inline-block align-text-top pe-3" />
+                        NEWS-TODAY
+                    </div>
+                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                        <form className="me-auto mb-2 mb-lg-0">
+                            <div className="">
+                                <select name='filter' className="dropdown-item c_item" onChange={e=>{setfirst (e.target.value); setCategory (e.target.value)}} value={category}>
+                                    {
+                                        categories.map((category, cate) => {
+                                            return <option className="" value={category} key={cate}>{capitalize(category)}</option>
+                                        })
+                                    }
+                                </select>
+                            </div>
+                        </form>
+                        <form className="d-flex" onSubmit={handleSubmit}>
+                            <input className="form-control me-2" type="search" id='input' name='input' value={input} placeholder="Search News ..." onChange={e => setInput(e.target.value)} autoComplete='off' />
+                            <button className="btn btn-outline-success" type="submit" id='search_btn' name='search_btn'>Search</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+
+            <AllNews  first={first}/>
+        </Category.Provider>
     )
 }
 
-export default Navbar
+export default Navbar;
+export { Category };
